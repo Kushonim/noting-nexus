@@ -1,3 +1,4 @@
+// Connecting/Installing necessary libraries
 const express = require('express');
 const app = express();
 const PORT = 3001;
@@ -5,15 +6,18 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
+// Initializing express application and connecting the front and back end
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 
+// Route to notes page
 app.get('/notes', (req, res) => {
     console.log('hello');
     res.sendFile(path.join(__dirname, './public/notes.html'));
 });
 
+// Route to the actual notes that reads and displays to the front end
 app.get('/api/notes', (req, res) => {
     fs.readFile('./db/db.json', (err, results) => {
         if(err) {
@@ -23,6 +27,7 @@ app.get('/api/notes', (req, res) => {
     });
 });
 
+// Route that takes care of creating the posts and rewrites the db.json file
 app.post('/api/notes', (req, res) => {
     const newNote = req.body;
     newNote.id = uuidv4();
@@ -42,6 +47,7 @@ app.post('/api/notes', (req, res) => {
     });
 });
 
+// Route that handles the deletion of notes and rewrites the db.json file
 app.delete('/api/notes/:id', (req, res) => {
     const noteId = req.params.id;
 
@@ -61,10 +67,12 @@ app.delete('/api/notes/:id', (req, res) => {
     });
 });
 
+// Default route that will navigate to index.html page in case the route doesn't exist
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
+// Listens to 3001 port
 app.listen(PORT, () => {
     console.log('Listening on port', PORT);
 });
